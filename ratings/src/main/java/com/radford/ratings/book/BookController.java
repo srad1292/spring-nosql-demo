@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.radford.ratings.exception.ResourceNotFoundException;
@@ -21,9 +22,14 @@ public class BookController {
 	private BookRepository bookRepository;
 	
 	@GetMapping("/book")
-	public List<Book> getAllBookRatings() {
-		return bookRepository.findAll();
+	public List<Book> getAllBookRatings(@RequestParam(required = false) String author) {
+		if(author != null) {
+			return bookRepository.findAllByAuthor(author);
+		} else {			
+			return bookRepository.findAll();
+		}
 	}
+	
 	
 	@GetMapping("/book/{id}")
 	public Book getBook(@PathVariable String id) throws ResourceNotFoundException {
