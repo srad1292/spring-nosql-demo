@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,11 +26,18 @@ public class BookController {
 	private BookRepository bookRepository;
 	
 	@GetMapping("/book")
-	public List<Book> getAllBookRatings(@RequestParam(required = false) String author) {
+	public Page<Book> getAllBookRatings(
+			@RequestParam(defaultValue = "1") Integer pageNumber, 
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(defaultValue = "author") String sortBy,
+            @RequestParam(required = false) String author
+    ) {
+		pageNumber--;
+		Pageable page = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
 		if(author != null) {
-			return bookRepository.findAllByAuthor(author);
+			return bookRepository.findAllByAuthor(author, page);
 		} else {			
-			return bookRepository.findAll();
+			return bookRepository.findAll(page);
 		}
 	}
 	
